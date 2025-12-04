@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 '''
-Detect Open Reading Frames (ORFs)
+Step 2. Detect Open Reading Frames (ORFs)
 
 - Scans all 3 reading frames (0, 1, 2)
 - Searches on 3 strands:
@@ -18,10 +18,18 @@ Works with seq_dict from load_fasta.py {seq_id : nucleotide_string}
 '''
 
 from Bio.Seq import Seq
+from typing import Dict
 
 # Start and stop codons used for ORF detection
 START_CODON = "ATG"
 STOP_CODONS = {"TAA", "TAG", "TGA"}
+
+
+def clean_orf(nt: str) -> str:
+    """Remove trailing stop codon to prevent AA/nt mismatch."""
+    if len(nt) >= 3 and nt[-3:] in STOP_CODONS:
+        return nt[:-3]
+    return nt
 
 
 def detect_orfs(seq: str, min_length: int, strand: str) -> list:
@@ -56,15 +64,19 @@ def detect_orfs(seq: str, min_length: int, strand: str) -> list:
                         end_pos = j + 3        # include stop codon
                         orf_seq = seq[start_pos:end_pos]
 
+                        # remove trailing stop codon
+                        orf_seq = clean_orf(orf_seq)
+
                         # Apply minimum length filter
                         if len(orf_seq) >= min_length:
-                            orfs.append({
-                                "start": start_pos,
-                                "end": end_pos,
-                                "frame": frame,
-                                "strand": strand,
-                                "sequence": orf_seq
-                            })
+                            if len(orf_seq) % 3 == 0:
+                                orfs.append({
+                                    "start": start_pos,
+                                    "end": end_pos,
+                                    "frame": frame,
+                                    "strand": strand,
+                                    "sequence": orf_seq
+                                })
                         break
 
                     j += 3   # move to next codon
@@ -104,12 +116,12 @@ def scan_all_frames(seq: str, min_length: int = 30) -> list:
 
 
 
-def extract_longest_orf(seq_dict: dict, min_length: int = 30) -> dict:
+def extract_longest_orf(seq_dict: Dict[str, str], min_length: int = 30) -> Dict[str, str]:
     """
     For each sequence in seq_dict, return the **longest ORF** found.
     """
 
-    longest_orfs = {}   # <-- updated variable name
+    longest_orfs = {}   # updated variable  
 
     # Loop through every input sequence
     for seq_id, nt_seq in seq_dict.items():
@@ -124,10 +136,9 @@ def extract_longest_orf(seq_dict: dict, min_length: int = 30) -> dict:
         # Select ORF with maximum length
         best_orf = max(all_orfs, key=lambda x: len(x["sequence"]))
 
-        # Save the nucleotide ORF sequence
-        longest_orfs[seq_id] = best_orf["sequence"]
+        # ensure ORF contains no trailing stop codon
+        cleaned = clean_orf(best_orf["sequence"])
+
+        longest_orfs[seq_id] = cleaned
 
     return longest_orfs
-
-
-    
