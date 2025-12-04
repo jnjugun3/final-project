@@ -1,0 +1,4 @@
+Seq1 → NM_001281804.1 Tursiops truncatus serum amyloid A-2 protein-like (LOC101315703), mRNA
+Seq2 → AY823345.1 Loxodonta africana isolate BE4056 NADH dehydrogenase subunit 5 (ND5) gene, partial cds; mitochondrial
+Seq3 → FJ712036.1 Acinonyx jubatus isolate cheetah 1 clone 2 interferon-gamma (IFNG) mRNA, complete cds
+Seq4 → NM_131146.2 Danio rerio cytochrome P450, family 26, subfamily A, polypeptide 1 (cyp26a1), mRNA

@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 import sys
+from typing import Dict
+
 '''
-Reads and validates a nucleotide FASTA file.
+Step 1. Reads and validates a nucleotide FASTA file.
 
 - Ensures file is not empty
 - Ensures headers begin with ">"
@@ -12,11 +14,23 @@ Reads and validates a nucleotide FASTA file.
 '''
 
 # Allowed nucleotide bases 
-VALID_BASES = set("ATCG") 
+VALID_BASES = set("ATCGNRYKMSWBDHV") 
 
 
-# Reads and validates FASTA file. Returns {seq_id : sequence} 
-def read_fasta(filepath: str) -> dict[str, str]:
+def read_fasta(filepath: str) -> Dict[str, str]:
+    """
+    Read and validate a FASTA file.
+
+    Parameters
+    ----------
+    filepath : str
+        Path to FASTA file.
+
+    Returns
+    -------
+    Dict[str, str]
+        Dictionary {seq_id : validated nucleotide sequence}.
+    """
 
     # Read all lines from FASTA file
     with open(filepath, "r") as fh:
@@ -66,14 +80,18 @@ def read_fasta(filepath: str) -> dict[str, str]:
         seq_line = line.replace(" ", "").upper()
 
         # Validate each nucleotide base
+        fixed_line = []  
         for base in seq_line:
+
+           
             if base not in VALID_BASES:
-                raise ValueError(
-                    f"Invalid nucleotide '{base}' in sequence '{current_header}'. Allowed: A, T, C, G."
-                )
+                print(f"[WARNING] Nonstandard nucleotide '{base}' in '{current_header}'. Converting to 'N'.")
+                base = "N"
+
+            fixed_line.append(base)
 
         # Append validated base line into a list 
-        current_seq.append(seq_line)
+        current_seq.append("".join(fixed_line))
 
     # Save last sequence after the loop ends
     if current_header and current_seq:

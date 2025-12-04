@@ -1,0 +1,19 @@
+Translation-Based MSA Pipeline — Run Log
+
+Run Name: demo_run
+Input FASTA: test.fasta
+
+Parameters:
+  Minimum ORF Length: 30
+  Translation Table: 1
+  K-mer Size: 3
+  Match Score: 1
+  Mismatch Penalty: -1
+  Gap Penalty: -1
+  Keep Stop Codon: False
+
+System Information:
+  CPU Cores Available: 10
+
+Performance:
+  Total Runtime: 0.34 seconds
