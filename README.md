@@ -249,7 +249,7 @@ results/
 
 📚 **References**
 
-I used AI to assist with code structuring, pseudocode generation, debugging, ORF detection logic, k-mer similarity design, Needleman–Wunsch alignment structure, codon back-translation design, and unit test creation.
+I used AI to assist  with all python sctipts , all debugging and modification was done by me. 
 
 #### 🎓 **Author**
 
