@@ -271,8 +271,7 @@ results/
 
 📚 **References**
 
-I used AI to assist with refining Python code. All debugging and modifications, were done by me.
-
+I used AI to assist with refining Python code in the aligner module, including ORF detection, translation, k-mer similarity, Needleman–Wunsch alignment, back-translation, statistical analysis components, and unit testing. The final implementation, error handling, and all testing were done by me.
 #### 🎓 **Author**
 
 **Jakes Njuguna**
