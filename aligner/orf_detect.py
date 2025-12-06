@@ -121,7 +121,7 @@ def extract_longest_orf(seq_dict: Dict[str, str], min_length: int = 30) -> Dict[
     For each sequence in seq_dict, return the **longest ORF** found.
     """
 
-    longest_orfs = {}   # updated variable  
+    longest_orfs = {}    
 
     # Loop through every input sequence
     for seq_id, nt_seq in seq_dict.items():
