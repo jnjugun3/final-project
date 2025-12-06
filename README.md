@@ -73,7 +73,7 @@ results/<run_name>/
 |----------------------|-----------------------------------------------|----------------|
 | `-i`, `--input`      | Input FASTA file (required)                   | —              |
 |----------------------|-----------------------------------------------|----------------|
-| `--run-name`         | Optional name for results folder              | `<input_name>` |
+| `--run-name`         | Optional name for results folder              | <input_name>   |
 |----------------------|-----------------------------------------------|----------------|
 | `--min-orf-length`   | Minimum ORF length to keep                    | 30             |
 |----------------------|-----------------------------------------------|----------------|
@@ -137,7 +137,7 @@ ACCATGAAATAA
 
 Output:
 
-{"sequence": "ATGAAATAA", "strand"}
+{"sequence": "ATGAAATAA", "strand": "+"}
 
 #### **Step 3 — Amino-Acid Translation (`translate_aa.py`)**
 
@@ -170,7 +170,7 @@ Sequence:
 
 MAKTL
 
-3-mers extracted::
+3-mers extracted:
 
 ["MAK", "AKT", "KTL"]
 
@@ -199,7 +199,7 @@ B → "AG"
 - Preserve the exact alignment structure produced in Step 5
 - Advance to the next ORF codon only when the AA is not a gap
 
-Example:
+Example
 
 AA alignment:
 M-A
@@ -258,7 +258,7 @@ Testing covers:
 
 #### 📤 **Outputs Generated**
 
-Inside the results/<input_name>/ folder:
+Inside the results/<run_name>/ folder:
 
 results/
 ├── aa/                 # Amino-acid alignments
