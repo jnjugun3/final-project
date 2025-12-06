@@ -15,13 +15,13 @@ from aligner.orf_detect import (
     extract_longest_orf,
 )
 
-
 def test_detect_orfs_forward_simple() -> None:
     """Detect simple forward-strand ORF."""
     seq = "ATGAAATAA"
     orfs = detect_orfs(seq, min_length=6, strand="+")
     assert len(orfs) == 1
-    assert orfs[0]["sequence"] == "ATGAAATAA"
+    # stop codon removed by clean_orf → "ATGAAA"
+    assert orfs[0]["sequence"] == "ATGAAA"
 
 
 def test_detect_orfs_respects_min_length() -> None:
@@ -49,4 +49,5 @@ def test_extract_longest_orf() -> None:
         "s1": "ATGAAA TAA ATGAAAAAA TAA".replace(" ", "")
     }
     longest = extract_longest_orf(seq_dict, min_length=6)
-    assert longest["s1"] == "ATGAAAAAATAA"
+    # longest ORF ends with TAA but clean_orf removes stop codon → "ATGAAAAAA"
+    assert longest["s1"] == "ATGAAAAAA"

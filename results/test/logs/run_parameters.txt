@@ -6,13 +6,13 @@ Input FASTA: test.fasta
 Parameters:
   ORF Min Length: 30
   Translation Table: 1
-  K-mer Size: 3
-  Match Score: 1
-  Mismatch Penalty: -1
-  Gap Penalty: -1
+  K-mer Size: 2
+  Match Score: 2
+  Mismatch Penalty: -2
+  Gap Penalty: -4
 
 System Info:
   CPU Cores: 10
 
 Performance:
-  Total Runtime: 0.32 seconds
+  Total Runtime: 0.36 seconds
