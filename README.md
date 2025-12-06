@@ -277,3 +277,5 @@ I used AI to assist with refining Python code in the aligner module, including O
 **Jakes Njuguna**
 Master of Science in Bioinformatics
 University of North Carolina at Charlotte
+Contact :
+jakesnjuguna@gmail.com
