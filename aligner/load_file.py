@@ -72,7 +72,7 @@ def read_fasta(filepath: str) -> Dict[str, str]:
             current_seq = []
             continue
 
-        # If we find a sequence before any header, raise an error
+        # raises an error if a sequence is found before any header 
         if current_header is None:
             raise ValueError("Found sequence before FASTA header ('>').")
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Step 8 – Codon Statistics Plotting
+Step 8.  Codon Statistics Plotting
 
 
 This module generates biologically meaningful visualizations from the

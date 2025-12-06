@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
- Codon-Aware Back-Translation
+ Step 6. Codon-Aware Back-Translation
 
 Converts an amino-acid multiple sequence alignment (MSA) produced in Step 5
 back into a codon-aware nucleotide alignment.
@@ -69,9 +69,7 @@ def back_translate(
         pos = 0                # pointer to next codon in nt_seq
         nt_out = []            # accumulator list for codon-aligned NT output
 
-        # NOTE:
-        # We ALWAYS iterate over the FULL aligned AA string.
-        # This fixes the length-mismatch bug when '*' was sliced off.
+       
 
         for aa in aa_aln:
 

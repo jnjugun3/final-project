@@ -43,7 +43,7 @@ def translate_orfs(longest_orfs: Dict[str, str], table: int = 1) -> Dict[str, st
             to_stop=False  # do not stop at stop codon; include '*' if present
         )
 
-        # Keep '*' if present — handled later during back-translation
+        # Keep '*' if present,  back-translation can handle it
         aa_clean = str(aa)
 
         # Store the translated sequence in the dictionary

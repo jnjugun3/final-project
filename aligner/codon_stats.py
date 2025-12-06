@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Step 7. Codon Statistics 
--------------------------
+
 
 Computes codon-level statistics from a codon-aware, gap-preserving
 nucleotide alignment.
@@ -14,8 +14,14 @@ This script provides:
     • GC fraction at positions 1, 2, 3
     • Alignment-wide summary (clean, sys.stdout-based)
     • CSV output for plotting in Step 8
+    
+The CSV file includes:
+	• codon_index  
+    • percent identity at positions 1, 2, and 3  
+    • combined codon identity (mean of positions 1–3)  
+    • GC content at each codon position  
+    • global percent identity for the full alignment
 
-This file is FAIR-compliant, PEP-8 clean, and fully modular.
 """
 
 import csv
@@ -152,7 +158,7 @@ def step7_codon_statistics(
         csv.writer(fh).writerows([header] + rows)
 
     
-    #   Terminal Summary  
+    #   Terminal print out  
      
 
     sys.stdout.write("\n[Codon Statistics Summary]\n")

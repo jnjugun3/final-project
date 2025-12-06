@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-K-mer Similarity & Guide Tree Construction (String Version)
+Step 4. K-mer Similarity & Guide Tree Construction (String Version)
 
 This module performs:
 
@@ -134,7 +134,7 @@ def build_tree_dict_from_kmers(kmer_dict):
     internal_nodes = {}                        # dictionary for tree structure
 
     if n <= 1:
-        return terminals_dic, internal_nodes   # trivial tree
+        return terminals_dic, internal_nodes   # simple tree
 
     # First internal node joins first two sequences
     node_id = n + 1

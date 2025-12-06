@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Progressive Needleman–Wunsch Alignment
+Step 5. Progressive Needleman–Wunsch Alignment
 
 This module performs progressive amino-acid multiple sequence alignment (MSA)
 using a right-branching guide tree.
@@ -20,7 +20,6 @@ import numpy as np
 from newu3.num import init_mat, fill_matrix, trace_matrix
 
 
- 
 
 def array_to_string(arr: np.ndarray) -> str:
     """Convert array-of-sets (e.g., [{'A'}, {'-'}]) into a simple string."""
@@ -69,7 +68,7 @@ def patch_gaps(old_seq: np.ndarray, aligned_seq: np.ndarray) -> np.ndarray:
 
     seq = old_seq.copy()
 
-    # Insert new gaps right→left to avoid  shifting
+    # Insert new gaps right→left to avoid shifting
     for pos in gap_positions:
         if pos >= len(seq):
             seq = np.append(seq, {'-'})
