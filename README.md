@@ -51,27 +51,42 @@ Final_Project_Prog2/
 
 #### Recommended: Conda environment
 
-conda create -n bioinfo_env python3
-conda activate bioinfo_env
-pip install biopython numpy pandas matplotlib pytest
+conda create -n msa_env python=3.10
+conda activate msa_env
+
+conda install biopython numpy pandas matplotlib pytest
+
 
 ### ▶️ **Running the Pipeline**
 
 Run : 
 
-python3 main.py -i test.fasta -o results/
+python3 main.py -i test.fasta  
 
-### All CLI arguments:
+This will automatically create:
 
-| Flag         | Meaning             | Default    |
-| ------------ | ------------------- | ---------- |
-| `-i`         | Input FASTA file    | required   |
-| `-o`         | Output directory    | `results/` |
-| `--k`        | k-mer size          | `3`        |
-| `--match`    | NW match score      | `1`        |
-| `--mismatch` | NW mismatch penalty | `-1`       |
-| `--gap`      | NW gap penalty      | `-1`       |
-| `--no-plots` | Disable plotting    | False      |
+results/<run_name>/
+
+## Command-Line Arguments
+
+| Flag / Argument      | Description                                   | Default        |
+|----------------------|-----------------------------------------------|----------------|
+| `-i`, `--input`      | Input FASTA file (required)                   | —              |
+|----------------------|-----------------------------------------------|----------------|
+| `--run-name`         | Optional name for results folder              | `<input_name>` |
+|----------------------|-----------------------------------------------|----------------|
+| `--min-orf-length`   | Minimum ORF length to keep                    | 30             |
+|----------------------|-----------------------------------------------|----------------|
+| `-t`, `--table`      | NCBI translation table ID                     | 1              |
+|----------------------|-----------------------------------------------|----------------|
+| `-k`, `--kmer`       | k-mer size for amino-acid similarity          | 3              |
+|----------------------|-----------------------------------------------|----------------|
+| `--match`            | Needleman–Wunsch match score                  | 1              |
+|----------------------|-----------------------------------------------|----------------|
+| `--mismatch`         | Needleman–Wunsch mismatch penalty             | -1             |
+|----------------------|-----------------------------------------------|----------------|
+| `--gap`              | Needleman–Wunsch gap penalty                  | -1             |
+
 
 #### See help:
 
@@ -87,53 +102,53 @@ FASTA → ORF Detection → AA Translation → k-mer Similarity
 
 ##### **Step 1 — Loading FASTA (`load_file.py`)**
 
-This module:
-
 - Reads nucleotide FASTA files
-
 - Ensures every header starts with `>`
-
 - Ensures only valid IUPAC nucleotide characters
-
 - Converts invalid characters → `"N"`
-
 - Prevents duplicate sequence IDs
-
 - Print warnings when needed
 
-  Input FASTA:
+Example 
+ 
+Input FASTA:
 
-  seq1
-  ATGCZ
+>seq1
+ATGCZ
 
-  Output:
+Output:
 
-  {"s1": "ATGCN"}
+{"s1": "ATGCN"}
 
 #####  **Step 2 — ORF Detection (`orf_detect.py`)**
 
 For each input sequence:
 
-- Scan **3 reading frames**
+- Scan all 3 reading frames 
 - Scan **forward**, **reverse**, **reverse complement**
 - Identify ORFs that start with `"ATG"` and end with `TAA/TAG/TGA`
 - Extract **longest ORF per sequence**
 
-Input :
+Example
+
+Input:
 
 ACCATGAAATAA
 
 Output:
 
-{"sequence": "ATGAAATAA", "strand": "-"}
+{"sequence": "ATGAAATAA", "strand"}
 
 #### **Step 3 — Amino-Acid Translation (`translate_aa.py`)**
 
-uses Biopython translation:
+- Translate each ORF using Biopython’s Seq.translate()
+- Use user-selected NCBI translation table
+- Keep "*" stop codons (handled later in back-translation)
+- Return dictionary {seq_id : AA_string}
 
-Seq(nt).translate(table=1, to_stop=False)
+Example
 
-Input :
+Input:
 
 "ATGGCTTAA"
 
@@ -141,83 +156,89 @@ Output:
 
 "MA*"
 
-#### Step 4 — K-mer Similarity & Guide Tree (`kmer_sim.py`)**
+#### **Step 4 — K-mer Similarity & Guide Tree (`kmer_sim.py`)**
 
-- Extract overlapping k-mers from AA sequences
-- Compute **Z-distance**
-- Greedy ordering to cluster similar sequences
-- Build **right-branching guide tree**
-- Remove stop codons (`*`)
+- Remove terminal "*" from amino-acid sequences
+- Extract overlapping k-mers (ex: MAKTL → MA, AK, KT, TL)
+- Compute Z-distance between sequences
+- Perform greedy ordering to cluster similar sequences
+- Build a right-branching guide tree used for progressive alignment
+
+Example 
 
 Sequence:
 
 MAKTL
 
-2-mers expected:
+3-mers extracted::
 
-["MA", "AK", "KT", "TL"]
+["MAK", "AKT", "KTL"]
 
 #### **Step 5 — Progressive NW Alignment (`needleman_wunch.py`)**
 
-- Build DP matrix
-- Score with match/mismatch/gap
-- Traceback to aligned arrays
-- Insert matching gaps into earlier sequences
-- Build consensus nodes
+- Align pairs of amino-acid sequences using the Needleman–Wunsch algorithm
+- Use match / mismatch / gap scores to fill the DP matrix
+- Trace back to get two aligned sequences (with gaps)
+- Build a consensus sequence from the aligned pair
+- Add the same gaps to all previously aligned sequences so every sequence stays the same length
+- Repeat until all sequences are aligned
 
-Output: 
+Example:
 
-String-named terminals remain unaligned 
+A → "ACG"
+B → "AG"
 
-"A" → "ACG"
-"B" → "AG"
-
-Numeric node alignment (used internally)
 
 [{'A'}, {'C'}, {'G'}]
 [{'A'}, {'-'}, {'G'}]
 
-#### Step 6 — Codon Back-Translation (`back_translate.py`)
+#### **Step 6 — Codon Back-Translation (`back_translate.py`)**
+
+- Map each aligned amino acid to the next codon in its original ORF
+- Convert alignment gaps (-) into codon-sized gaps (---)
+- Preserve the exact alignment structure produced in Step 5
+- Advance to the next ORF codon only when the AA is not a gap
+
+Example:
 
 AA alignment:
-
 M-A
 
-ORF:
-
+Original ORF:
 ATGAAA
 
-Output:
-
+Back-translated output:
 ATG---AAA
 
-## Step 7 — Codon Position Statistics (`codon_stats.py`)
 
-Computes:
+## **Step 7 — Codon Position Statistics (`codon_stats.py`)**
 
-- Identity at codon positions 1, 2, 3
-- GC content per position
-- Global identity
-- Per-codon identity
-- Writes `codon_stats.csv`
-  - containing identity + GC content
-  - codon_index, identity_pos1, identity_pos2, identity_pos3,
-    identity_codon_total, gc_pos1, gc_pos2, gc_pos3, identity_global
+- Take the codon-aligned nucleotide sequences from Step 6
+- Split the alignment into codons (groups of 3 nt)
+- Compute percent identity at positions 1, 2, and 3
+- Compute average codon identity (mean of pos1 + pos2 + pos3)
+- Compute GC content at positions 1, 2, and 3
+- Compute global identity across the entire nucleotide alignment
+- Save all results into codon_stats.csv
+The CSV file contains:
+codon_index, identity_pos1, identity_pos2, identity_pos3, 
+identity_codon_total, gc_pos1, gc_pos2, gc_pos3, identity_global
 
-#### Step 8 — Plotting (`stats_graph.py`) 
 
-Generates:
+#### **Step 8 — Plotting (`stats_graph.py`)** 
 
-- Identity skyline plot
-- Positional identity plot
-- GC position plot
-- Pairwise identity heatmap
+- Read the values from codon_stats.csv
+- Plot identity at codon positions 1, 2, and 3
+- Plot the combined codon identity across the whole alignment
+- Plot GC content at positions 1, 2, and 3
+- Create a pairwise percent-identity heatmap using the nucleotide alignment
+- Save all plots as PNG images in the plots/ folder
 
 #### 🧪 **Testing & Validation**
 
 The pipeline includes unit  tests all located in:
 
-Final_Project_Prog2/tests/
+final-project/tests/
 
 To run all tests:
 
@@ -237,19 +258,20 @@ Testing covers:
 
 #### 📤 **Outputs Generated**
 
-Inside the `results/` folder:
+Inside the results/<input_name>/ folder:
 
 results/
-├── aa/                     # aligned amino acids
-├── nt_backtranslated/      # aligned codon-aware nucleotides
-├── stats/                  # codon_stats.csv
-├── plots/                  # PNG figures
-├── logs/                   # pipeline logs
-└── input/                  # copy of user input
+├── aa/                 # Amino-acid alignments
+├── input/              # Copy of input FASTA
+├── logs/               # Run logs and parameters
+├── nt_backtranslated/  # Codon-aware nucleotide alignments
+├── plots/              # All generated plots
+└── stats/              # codon_stats.csv and statistics
+
 
 📚 **References**
 
-I used AI to assist  with all python sctipts , all debugging and modification was done by me. 
+I used AI to assist with refining Python code. All debugging and modifications, were done by me.
 
 #### 🎓 **Author**
 
