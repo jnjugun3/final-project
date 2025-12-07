@@ -59,13 +59,18 @@ conda install biopython numpy pandas matplotlib pytest
 
 ### ▶️ **Running the Pipeline**
 
-Run : 
+To run the pipeline with default settings:
 
 python3 main.py -i test.fasta  
 
-This will automatically create:
+This command automatically creates an output directory:
 
 results/<run_name>/
+
+An example run using custom alignment scores, k-mer size, and translation table:
+
+ python3 main.py -i test.fasta --match 2 --mismatch -2 --gap -4 --k 2 --t 1
+
 
 ## Command-Line Arguments
 
